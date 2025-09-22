@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Solicitações de Manutenção</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+
+<body>
+    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" th:href="@{/maintenance}">Sistema de Manutenção</a>
+        </div>
+    </nav>
+    <main class="container">
+
+        <h1>Lista de Solicitações</h1>
+
+        <table class="table" th:unless="${#lists.isEmpty(requests)}">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Solicitante</th>
+                    <th scope="col">Descrição do Problema</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Urgência</th>
+                    <th scope="col">Data da Solicitação</th>
+                    <th scope="col">Data de Finalização</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="request : ${requests}">
+                    <th scope="row" th:text="${request.id}">---</th>
+                    <td th:text="${request.requesterName}">---</td>
+                    <td th:text="${request.problemDescription}">---</td>
+                    <td th:text="${request.maintenanceType.displayName}">---</td>
+                    <td th:text="${request.urgency.displayName}">---</td>
+                    <td th:text="${#temporals.format(request.requestTimestamp, 'dd/MM/yyyy HH:mm')}">---</td>
+                    <td th:text="${request.finishedTimestamp != null ? #temporals.format(request.finishedTimestamp, 'dd/MM/yyyy HH:mm') : '-'}">---</td>
+                    <td>
+                        <form class="d-inline" th:action="@{/maintenance/finish/{id}(id=${request.id})}" method="POST">
+                            <button type="submit" class="btn btn-sm btn-primary"
+                                th:classappend="${request.finishedTimestamp} ? 'disabled' : ''">Finalizar</button>
+                        </form>
+                        <a th:href="@{/maintenance/delete/{id}(id=${request.id})}" class="btn btn-sm btn-danger">Excluir</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p th:if="${#lists.isEmpty(requests)}">Nenhuma solicitação de manutenção cadastrada.</p>
+
+        <a th:href="@{/maintenance/create}" class="btn btn-sm btn-primary">Nova Solicitação</a>
+
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
