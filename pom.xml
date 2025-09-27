@@ -6,13 +6,12 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.5.5</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+		<relativePath/> </parent>
 	<groupId>br.com.aweb</groupId>
-	<artifactId>maintenance-system</artifactId>
+	<artifactId>sistema-manutencao</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>maintenance-system</name>
-	<description>Maintenance request system project for Spring Boot</description>
+	<name>Sistema de Manutenção</name>
+	<description>Projeto de sistema de solicitação de manutenção para Spring Boot</description>
 	<url/>
 	<licenses>
 		<license/>

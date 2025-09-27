@@ -9,57 +9,66 @@
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 
-<body>
+<body class="bg-light">
     <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand" th:href="@{/maintenance}">Sistema de Manutenção</a>
+            <a class="navbar-brand" th:href="@{/manutencao}">Sistema de Manutenção</a>
         </div>
-    </nav>    
+    </nav>
 
-    <main class="container">
-
-        <h1>Nova Solicitação de Manutenção</h1>
-
-        <form method="POST" th:object="${request}">
-            <div class="mb-3">
-                <label for="requesterName" class="form-label">Nome do Solicitante</label>
-                <input type="text" class="form-control" id="requesterName" th:field="*{requesterName}">
-                <ul>
-                    <li th:each="error : ${#fields.errors('requesterName')}" th:text="${error}" class="text-danger"></li>
-                </ul>
+    <main class="container mt-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h1 class="h4 mb-0">Nova Solicitação de Manutenção</h1>
             </div>
-            <div class="mb-3">
-                <label for="problemDescription" class="form-label">Descrição do Problema</label>
-                <textarea class="form-control" id="problemDescription" rows="3" th:field="*{problemDescription}"></textarea>
-                <ul>
-                    <li th:each="error : ${#fields.errors('problemDescription')}" th:text="${error}" class="text-danger"></li>
-                </ul>
+            <div class="card-body">
+                <form method="POST" th:object="${request}" th:action="@{/manutencao/criar}">
+                    <div class="mb-3">
+                        <label for="requesterName" class="form-label">Nome do Solicitante</label>
+                        <input type="text" class="form-control" id="requesterName" th:field="*{requesterName}"
+                            th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('requesterName')}"
+                            th:errors="*{requesterName}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="problemDescription" class="form-label">Descrição do Problema</label>
+                        <textarea class="form-control" id="problemDescription" rows="3"
+                            th:field="*{problemDescription}" th:errorclass="is-invalid"></textarea>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('problemDescription')}"
+                            th:errors="*{problemDescription}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="maintenanceType" class="form-label">Tipo de Manutenção</label>
+                        <select class="form-select" id="maintenanceType" th:field="*{maintenanceType}"
+                            th:errorclass="is-invalid">
+                            <option value="">Selecione...</option>
+                            <option value="Preventiva">Preventiva</option>
+                            <option value="Corretiva">Corretiva</option>
+                            <option value="Preditiva">Preditiva</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('maintenanceType')}"
+                            th:errors="*{maintenanceType}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="urgency" class="form-label">Nível de Urgência</label>
+                        <select class="form-select" id="urgency" th:field="*{urgency}" th:errorclass="is-invalid">
+                            <option value="">Selecione...</option>
+                            <option value="Baixa">Baixa</option>
+                            <option value="Média">Média</option>
+                            <option value="Alta">Alta</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('urgency')}" th:errors="*{urgency}">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <a th:href="@{/manutencao}" class="btn btn-secondary me-2">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
             </div>
-            <div class="mb-3">
-                <label for="maintenanceType" class="form-label">Tipo de Manutenção</label>
-                <select class="form-select" id="maintenanceType" th:field="*{maintenanceType}">
-                    <option value="">Selecione...</option>
-                    <option th:each="type : ${maintenanceTypeOptions}" th:value="${type}" th:text="${type.displayName}"></option>
-                </select>
-                 <ul>
-                    <li th:each="error : ${#fields.errors('maintenanceType')}" th:text="${error}" class="text-danger"></li>
-                </ul>
-            </div>
-            <div class="mb-3">
-                <label for="urgency" class="form-label">Nível de Urgência</label>
-                <select class="form-select" id="urgency" th:field="*{urgency}">
-                    <option value="">Selecione...</option>
-                    <option th:each="urgency : ${urgencyOptions}" th:value="${urgency}" th:text="${urgency.displayName}"></option>
-                </select>
-                <ul>
-                    <li th:each="error : ${#fields.errors('urgency')}" th:text="${error}" class="text-danger"></li>
-                </ul>
-            </div>
-            <button type="submit" class="btn btn-primary">Salvar</button>
-        </form>
-
+        </div>
     </main>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>

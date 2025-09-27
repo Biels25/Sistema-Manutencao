@@ -9,57 +9,112 @@
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 
-<body>
+<body class="bg-light">
     <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand" th:href="@{/maintenance}">Sistema de Manutenção</a>
+            <a class="navbar-brand" th:href="@{/manutencao}">Sistema de Manutenção</a>
         </div>
     </nav>
-    <main class="container">
+    <main class="container mt-4">
 
-        <h1>Lista de Solicitações</h1>
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
 
-        <table class="table" th:unless="${#lists.isEmpty(requests)}">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Solicitante</th>
-                    <th scope="col">Descrição do Problema</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Urgência</th>
-                    <th scope="col">Data da Solicitação</th>
-                    <th scope="col">Data de Finalização</th>
-                    <th scope="col">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="request : ${requests}">
-                    <th scope="row" th:text="${request.id}">---</th>
-                    <td th:text="${request.requesterName}">---</td>
-                    <td th:text="${request.problemDescription}">---</td>
-                    <td th:text="${request.maintenanceType.displayName}">---</td>
-                    <td th:text="${request.urgency.displayName}">---</td>
-                    <td th:text="${#temporals.format(request.requestTimestamp, 'dd/MM/yyyy HH:mm')}">---</td>
-                    <td th:text="${request.finishedTimestamp != null ? #temporals.format(request.finishedTimestamp, 'dd/MM/yyyy HH:mm') : '-'}">---</td>
-                    <td>
-                        <form class="d-inline" th:action="@{/maintenance/finish/{id}(id=${request.id})}" method="POST">
-                            <button type="submit" class="btn btn-sm btn-primary"
-                                th:classappend="${request.finishedTimestamp} ? 'disabled' : ''">Finalizar</button>
-                        </form>
-                        <a th:href="@{/maintenance/delete/{id}(id=${request.id})}" class="btn btn-sm btn-danger">Excluir</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h1 class="h4 mb-0">Lista de Solicitações</h1>
+                <a th:href="@{/manutencao/criar}" class="btn btn-primary">Nova Solicitação</a>
+            </div>
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(requests)}" class="text-center p-4">
+                    <p class="mb-0">Nenhuma solicitação de manutenção cadastrada.</p>
+                </div>
 
-        <p th:if="${#lists.isEmpty(requests)}">Nenhuma solicitação de manutenção cadastrada.</p>
-
-        <a th:href="@{/maintenance/create}" class="btn btn-sm btn-primary">Nova Solicitação</a>
-
+                <table class="table table-striped table-hover" th:unless="${#lists.isEmpty(requests)}">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Solicitante</th>
+                            <th scope="col">Descrição do Problema</th>
+                            <th scope="col">Tipo</th>
+                            <th scope="col">Urgência</th>
+                            <th scope="col">Data da Solicitação</th>
+                            <th scope="col">Data de Finalização</th>
+                            <th scope="col" class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="request : ${requests}" class="align-middle">
+                            <th scope="row" th:text="${request.id}">---</th>
+                            <td th:text="${request.requesterName}">---</td>
+                            <td th:text="${request.problemDescription}">---</td>
+                            <td th:text="${request.maintenanceType}">---</td>
+                            <td th:text="${request.urgency}">---</td>
+                            <td th:text="${#temporals.format(request.requestTimestamp, 'dd/MM/yyyy HH:mm')}">---</td>
+                            <td
+                                th:text="${request.finishedTimestamp != null ? #temporals.format(request.finishedTimestamp, 'dd/MM/yyyy HH:mm') : '-'}">
+                                ---</td>
+                            <td class="text-center">
+                                <form class="d-inline" th:action="@{/manutencao/finalizar/{id}(id=${request.id})}"
+                                    method="POST">
+                                    <button type="submit" class="btn btn-sm btn-success"
+                                        th:disabled="${request.finishedTimestamp != null}">Finalizar</button>
+                                </form>
+                                <button type="button" class="btn btn-sm btn-danger" 
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#confirmarExclusaoModal"
+                                    th:data-bs-url="@{/manutencao/excluir/{id}(id=${request.id})}"
+                                    th:data-bs-nome="${request.requesterName}">
+                                    Excluir
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
+
+    <div class="modal fade" id="confirmarExclusaoModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalLabel">Confirmar Exclusão</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza que deseja excluir a solicitação de <strong id="nomeSolicitanteModal"></strong>?
+                </div>
+                <div class="modal-footer">
+                    <form id="formExclusao" th:action="@{/}" method="post">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+
+    <script>
+        const confirmarExclusaoModal = document.getElementById('confirmarExclusaoModal');
+        confirmarExclusaoModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            const url = button.getAttribute('data-bs-url');
+            const nome = button.getAttribute('data-bs-nome');
+
+            const form = confirmarExclusaoModal.querySelector('#formExclusao');
+            form.setAttribute('action', url);
+
+            const nomeSolicitante = confirmarExclusaoModal.querySelector('#nomeSolicitanteModal');
+            nomeSolicitante.textContent = nome;
+        });
+    </script>
 </body>
 
 </html>
